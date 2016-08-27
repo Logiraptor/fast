@@ -1,0 +1,26 @@
+
+# int
+val a = 1
+
+# int
+val x = a
+
+# int
+val b = 3 + 4
+
+# a -> a
+val id = x => x
+
+# a -> a
+val idtwo(x) = x
+
+# a -> a
+val test(x) = id(x)
+
+# (a -> b) -> a -> b
+val apply(f, arg) = f(arg)
+
+# a -> a
+val multiapply = (apply(id))(test)
+
+
