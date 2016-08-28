@@ -1,25 +1,18 @@
 
+open OUnit
+
+let parse s =
+    let lexbuf = Lexing.from_string s in
+    Parser.main Lexer.token lexbuf
+
+
+let parser_tests = "Parser" >:::
+[
+    "simple let" >:: ( fun () -> 
+        let result = parse "val a = 1" in
+        assert_equal [("a", Ast.Int 1)] result
+    )
+]
 
 
 
-let _ =
-    let inputFile = open_in "example.fb" in
-    let lexbuf = Lexing.from_channel inputFile in
-    try
-        begin
-            let result = Parser.main Lexer.token lexbuf in
-            let aconvertResult = Alpha.convert result in
-            let output = Ast.dump_program aconvertResult in
-            print_string output; print_newline();
-            close_in inputFile
-        end
-    with
-    | Parser.Error ->
-      begin
-        let error = Lexer.getError lexbuf in
-        close_in_noerr inputFile;
-        Lexer.string_of_error error |> failwith
-      end
-    | e ->
-        close_in_noerr inputFile;
-        raise e

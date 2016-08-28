@@ -19,8 +19,8 @@ RUN opam install -y core
 
 RUN opam install -y menhir
 
+RUN opam install -y OUnit
+
 ADD ./src /code
 
 WORKDIR /code
-
-ENTRYPOINT opam config exec "ocamlbuild -pkg core -use-ocamlfind -use-menhir -tag thread main.native"
