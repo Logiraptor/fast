@@ -19,10 +19,8 @@ RUN opam install -y core
 
 RUN opam install -y menhir
 
-RUN echo "eval `opam config env`" >> ~/.profile
-
 ADD ./src /code
 
 WORKDIR /code
 
-ENTRYPOINT ocamlbuild -pkg core -use-ocamlfind -use-menhir -tag thread main.native
+ENTRYPOINT opam config exec "ocamlbuild -pkg core -use-ocamlfind -use-menhir -tag thread main.native"
