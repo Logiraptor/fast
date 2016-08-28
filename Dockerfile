@@ -22,5 +22,8 @@ RUN opam install -y menhir
 RUN opam install -y OUnit
 
 ADD ./src /code
+ADD ./test /test
+
+RUN mv /test/* /code
 
 WORKDIR /code

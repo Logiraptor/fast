@@ -26,7 +26,7 @@ rule token = parse
     | "val"          { VAL }
     
     | ['0'-'9']+ as lxm         { INT(int_of_string lxm) }
-    | ['a'-'z' 'A'-'Z']+ as lxm {ID lxm}
+    | ['a'-'z' 'A'-'Z'] ['a'-'z' 'A'-'Z' '0'-'9' '\'']* as lxm {ID lxm}
     
     
     | '='            { EQUALS }
