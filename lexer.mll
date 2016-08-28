@@ -21,6 +21,8 @@ let string_of_error (line, column, token) =
 rule token = parse
     [' ' '\t' '\n']     { token lexbuf }     (* skip blanks *)
     
+    | '#' [^ '\n']*  { token lexbuf } (* skip comments *)
+    
     | "val"          { VAL }
     
     | ['0'-'9']+ as lxm         { INT(int_of_string lxm) }
