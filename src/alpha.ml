@@ -5,7 +5,7 @@ open Dict
 type idDict = (Ast.id, Ast.id) dict
 
 let print_idDict (d : idDict) =
-    print_string (dump d (fun x -> x) (fun x -> x));
+    print_string (dump (fun x -> x) (fun x -> x) d);
     print_newline()
 
 

@@ -6,8 +6,9 @@ let _ =
         begin
             let result = Parser.main Lexer.token lexbuf in
             let aconvertResult = Alpha.convert result in
-            let output = Ast.dump_program aconvertResult in
-            print_string output; print_newline();
+            let output = Interp.interp aconvertResult in
+            let outputString = Interp.string_of_value output in
+            print_string outputString; print_newline();
             close_in inputFile
         end
     with

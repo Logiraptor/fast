@@ -21,6 +21,6 @@ let all = "Dict" >:::
     "dict dump" >:: ( fun () ->
         let (e : test_dict) = append (append Empty 1 2) 2 3  in
         assert_equal ~printer:(fun x -> x) ("{2 -> 3; 1 -> 2; }") 
-            (dump e string_of_int string_of_int)
+            (dump string_of_int string_of_int e)
     )
 ]

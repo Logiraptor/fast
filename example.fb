@@ -1,26 +1,54 @@
 
-# int
-val a = 1
 
-# int
-val x = a
+# arithmatic
+val zero(f, x) = x
 
-# int
-val b = 3 + 4
+val succ(n, f, x) = f(n(f, x))
 
-# a -> a
-val id = x => x
+val pred(n,f,x) = n(g => h => h(g(f)), u => x, u => u)
 
-# a -> a
-val idtwo(x) = x
+val plus(m, n, f, x) = m(f, n(f,x))
 
-# a -> a
-val test(x) = id(x)
+val sub(m, n) = n(pred, m)
 
-# (a -> b) -> a -> b
-val apply(f, arg) = f(arg)
+val mult(m, n, f) = m(n(f))
 
-# a -> a
-val multiapply = (apply(id))(test)
+val pow(b, e) = e(b)
 
 
+# numbers
+val two = succ(succ(zero))
+val four = plus(two, two)
+val ten = plus(plus(four, four), two)
+
+# logic
+
+val true(x, y) = x
+val false(x, y) = y
+
+val and(p, q) = p(q, p)
+val or(p, q) = p(p, q)
+val not(p) = p(false, true)
+val ifthenelse(p, a, b) = p(a, b)
+
+val iszero(n) = n(x=>false, true)
+val leq(x, y) = iszero(sub(x, y))
+val eq(x, y) = and(leq(x, y), leq(y, x))
+
+
+# combinators
+val U(f) = f(f)
+val Y = U(f => F => F(x => f(f, F, x)))
+
+# factorial
+val fact(r, x) =
+    (ifthenelse(iszero(x),
+        q=>succ(zero),
+        q=>mult(x, r(pred(x)))
+    ))(0)
+
+# resolution functions
+val inc(x) = x + 1
+val resolve(n) = n(inc, 0)
+
+val main(x) = resolve(Y(fact, ten))

@@ -25,6 +25,10 @@ let all = "Parser" >:::
         parse "val main = run(arg)" |>
         assert_equal_prog [("main", Apply (ID "run", ID "arg"))]
     );
+    "multi-application" >:: ( fun () -> 
+        parse "val main = run(arg, other)" |>
+        assert_equal_prog [("main", Apply (Apply (ID "run", ID "arg"), ID "other"))]
+    );
     "function definition" >:: ( fun () -> 
         parse "val fst(arg1, arg2) = arg1" |>
         assert_equal_prog [("fst", Lambda ("arg1", Lambda ("arg2", ID "arg1")))]
