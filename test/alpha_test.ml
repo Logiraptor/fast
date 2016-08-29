@@ -26,5 +26,20 @@ val g = h => g
          val a = 2"
         "val a = 1
          val a' = 2"
+    );
+    "lambda" >:: ( fun () ->
+        assert_equal_convert
+        "val x = x => x"
+        "val x = x' => x'"
+    );
+    "call" >:: ( fun () ->
+        assert_equal_convert
+        "val bar = foo => bar => foo(bar)"
+        "val bar = foo => bar' => foo(bar')"
+    );
+
+    "undefined id" >:: ( fun () -> 
+        assert_raises (Alpha.UndefinedID "foo") 
+            (fun () -> Alpha.convert (parse "val x = foo"))
     )
 ]

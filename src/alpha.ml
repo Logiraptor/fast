@@ -5,7 +5,7 @@ open Dict
 type idDict = (Ast.id, Ast.id) dict
 
 let print_idDict (d : idDict) =
-    print_string (dump_dict d (fun x -> x) (fun x -> x));
+    print_string (dump d (fun x -> x) (fun x -> x));
     print_newline()
 
 
@@ -29,7 +29,7 @@ let rec convert prog =
         match expr with
             Ast.Int i -> (env, Ast.Int i)
           | Ast.ID id -> 
-            (let newName = dict_lookup env id in
+            (let newName = lookup env id in
             match newName with
                 None -> raise (UndefinedID id)
               | Some name -> (env, Ast.ID name))
@@ -50,7 +50,7 @@ let rec convert prog =
             (newEnv2, Ast.Lambda (newArg, newBody))
 
     and alloc_name (env : idDict) (orig : Ast.id) (name : Ast.id) : (idDict * Ast.id) =
-        let (current : Ast.id option) = dict_lookup env name in
+        let (current : Ast.id option) = lookup env name in
         match current with
-            None -> (dict_append env orig name, name)
+            None -> (append env orig name, name)
           | Some other -> alloc_name env orig (other ^ "'")
