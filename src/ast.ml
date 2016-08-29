@@ -20,6 +20,7 @@ type expr = Int of int
           | UnOp of (unOp * expr)
           | Lambda of (id * expr)
           | Apply of (expr * expr)
+          | If of (expr * expr * expr)
 
 type decl = (id * expr)
 
@@ -52,6 +53,7 @@ let rec dump_expr expr =
       | UnOp (op, inner) -> Printf.sprintf "(`unop %s %s)" (string_of_unop op) (dump_expr inner)
       | Lambda (arg, body) -> Printf.sprintf "(`lambda %s %s)" arg (dump_expr body)
       | Apply (func, arg) -> Printf.sprintf "(`call %s %s)" (dump_expr func) (dump_expr arg)
+      | If (cond, conseq, alt) -> Printf.sprintf "(`if %s %s %s)" (dump_expr cond) (dump_expr conseq) (dump_expr alt)
 
 let dump_decl (name, expr) =
     Printf.sprintf "(`decl %s %s)" name (dump_expr expr)

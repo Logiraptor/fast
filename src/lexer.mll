@@ -24,6 +24,9 @@ rule token = parse
     | '#' [^ '\n']*  { token lexbuf } (* skip comments *)
     
     | "val"          { VAL }
+    | "if"           { IF }
+    | "then"         { THEN }
+    | "else"         { ELSE }
     
     | ['0'-'9']+ as lxm         { INT(int_of_string lxm) }
     | ['a'-'z' 'A'-'Z'] ['a'-'z' 'A'-'Z' '0'-'9' '\'']* as lxm {ID lxm}

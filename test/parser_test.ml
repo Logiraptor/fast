@@ -53,6 +53,20 @@ let all = "Parser" >:::
             )]
     );
     
+    
+    "conditional logic" >:: ( fun () -> 
+        parse "
+val change(up, x) = if up then x + 1 else x - 1
+" |>
+        assert_equal_prog [
+            ("change", Lambda ("up", Lambda ("x", If (
+                ID "up",
+                BinOp (Add, ID "x", Int 1),
+                BinOp (Sub, ID "x", Int 1)
+                ))))
+        ]
+    );
+    
     "full program" >:: ( fun () -> 
         parse "
 # result just computes some stuff

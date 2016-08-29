@@ -19,6 +19,7 @@ let rec makeApply (func : Ast.expr) (args : Ast.expr list) : Ast.expr =
 %token VAL
 %token EQUALS
 %token ROCKET
+%token IF THEN ELSE
 %token EQUALSEQUALS LESSTHAN GREATERTHAN LESSTHANEQUALS GREATERTHANEQUALS
 %token PLUS MINUS TIMES DIV
 %token LPAREN RPAREN
@@ -68,6 +69,7 @@ expr:
     | base_expr LPAREN expr RPAREN   { Ast.Apply ($1, $3) }
     | base_expr explist              { makeApply $1 $2 }
     | base_expr                      { $1 }
+    | IF expr THEN expr ELSE expr    { Ast.If ($2, $4, $6) }
 ;
 
 base_expr:

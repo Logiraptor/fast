@@ -70,5 +70,15 @@ let all = "Interp" >:::
            ("val main(x) = 1 <= 0", Interp.False);
         ]
     );
+    "conditional logic" >:: ( fun () ->
+        List.iter ( fun (src, value) -> 
+            let prog = load src in
+            let actual = Interp.interp prog in
+            assert_equal_value value actual
+        ) [
+           ("val main(x) = if 1 == 1 then 0 else 1", Interp.Int 0);
+           ("val main(x) = if 1 == 2 then 0 else 1", Interp.Int 1);
+        ]
+    );
 ]
 
