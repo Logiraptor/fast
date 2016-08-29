@@ -12,6 +12,8 @@ and ctx =
 and value =
     Int of int
   | Lambda of (Ast.id * Ast.expr * ctx)
+  | True
+  | False
 
 
 let empty_ctx = {values = Empty}
@@ -23,6 +25,8 @@ let rec string_of_value v =
         Int i -> Printf.sprintf "(int %d)" i
       | Lambda (id, exp, ctx) -> Printf.sprintf "(lambda (%s) -> %s)" 
             id (Ast.dump_expr exp)
+      | True -> "(true)"
+      | False -> "(false)"
 
 let assert_int x =
     match x with
@@ -52,7 +56,13 @@ let rec eval ctx exp =
         Ast.Add -> Int (lhs + rhs)
         | Ast.Mul -> Int (lhs * rhs)
         | Ast.Div -> Int (lhs / rhs)
-        | Ast.Sub -> Int (lhs - rhs))
+        | Ast.Sub -> Int (lhs - rhs)
+        | Ast.Eq -> if lhs == rhs then True else False
+        | Ast.Lt -> if lhs < rhs then True else False
+        | Ast.Gt -> if lhs > rhs then True else False
+        | Ast.Lte -> if lhs <= rhs then True else False
+        | Ast.Gte -> if lhs >= rhs then True else False
+    )
     
     | Ast.Lambda (arg, body) -> Lambda (arg, body, ctx)
  

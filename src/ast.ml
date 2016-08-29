@@ -3,6 +3,12 @@ type binOp = Add
            | Sub
            | Mul
            | Div
+           | Eq
+           | Lt
+           | Gt
+           | Lte
+           | Gte
+
 
 type id = string
 
@@ -26,6 +32,11 @@ let string_of_op op =
       | Sub -> "-"
       | Mul -> "*"
       | Div -> "/"
+      | Eq -> "=="
+      | Lt -> "<"
+      | Gt -> ">"
+      | Lte -> "<="
+      | Gte -> ">="
 
 
 let string_of_unop op =

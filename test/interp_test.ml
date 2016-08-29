@@ -47,4 +47,28 @@ let all = "Interp" >:::
              val main(x) = apply(sum(50), 25)", Interp.Int 75)
         ]
     );
+    "boolean operators" >:: ( fun () ->
+        List.iter ( fun (src, value) -> 
+            let prog = load src in
+            let actual = Interp.interp prog in
+            assert_equal_value value actual
+        ) [
+           ("val main(x) = 1 == 1", Interp.True);
+           ("val main(x) = 1 == 2", Interp.False);
+           ("val main(x) = 1 < 0", Interp.False);
+           ("val main(x) = 1 < 1", Interp.False);
+           ("val main(x) = 1 < 2", Interp.True);
+           ("val main(x) = 1 > 2", Interp.False);
+           ("val main(x) = 1 > 1", Interp.False);
+           ("val main(x) = 1 > 0", Interp.True);
+           ("val main(x) = 1 >= 2", Interp.False);
+           ("val main(x) = 1 >= 1", Interp.True);
+           ("val main(x) = 1 >= 0", Interp.True);
+           ("val main(x) = 1 > 0", Interp.True);
+           ("val main(x) = 1 <= 2", Interp.True);
+           ("val main(x) = 1 <= 1", Interp.True);
+           ("val main(x) = 1 <= 0", Interp.False);
+        ]
+    );
 ]
+

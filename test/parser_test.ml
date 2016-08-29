@@ -13,6 +13,10 @@ let all = "Parser" >:::
         parse "val x = 1 + 2" |>
         assert_equal_prog [("x", BinOp (Add, Int 1, Int 2))]
     );
+    "boolean ops" >:: ( fun () -> 
+        parse "val x = 1 == 2" |>
+        assert_equal_prog [("x", BinOp (Eq, Int 1, Int 2))]
+    );
     "identifier" >:: ( fun () -> 
         parse "val x = y2" |>
         assert_equal_prog [("x", ID "y2")]

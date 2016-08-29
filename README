@@ -13,3 +13,11 @@ If this goes as planned, I will eventually product a compiled binary which is re
 
 As of now, I have a simple ast-traversal interpreter. It's painfully slow compared to equivalent programs in other languages.
 
+
+
+TODO:
+
+- [x] Add (==, >, <, >=, <=) operator support
+- [ ] Support operators as functions (+)
+- [ ] Add if then else
+

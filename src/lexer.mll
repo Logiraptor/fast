@@ -32,6 +32,11 @@ rule token = parse
     | '='            { EQUALS }
     | ','            { COMMA }
     | "=>"           { ROCKET }
+    | "=="           { EQUALSEQUALS }
+    | "<"            { LESSTHAN }
+    | ">"            { GREATERTHAN }
+    | "<="           { LESSTHANEQUALS }
+    | ">="           { GREATERTHANEQUALS }
     | '+'            { PLUS }
     | '-'            { MINUS }
     | '*'            { TIMES }

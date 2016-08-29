@@ -19,10 +19,14 @@ let rec makeApply (func : Ast.expr) (args : Ast.expr list) : Ast.expr =
 %token VAL
 %token EQUALS
 %token ROCKET
+%token EQUALSEQUALS LESSTHAN GREATERTHAN LESSTHANEQUALS GREATERTHANEQUALS
 %token PLUS MINUS TIMES DIV
 %token LPAREN RPAREN
 %token COMMA
 %token EOF
+%left EQUALSEQUALS
+%left LESSTHANEQUALS GREATERTHANEQUALS
+%left LESSTHAN GREATERTHAN
 %left PLUS MINUS        /* lowest precedence */
 %left TIMES DIV         /* medium precedence */
 %left ROCKET
@@ -54,6 +58,11 @@ expr:
     | expr MINUS expr                { Ast.BinOp (Ast.Sub, $1, $3) }
     | expr TIMES expr                { Ast.BinOp (Ast.Mul, $1, $3) }
     | expr DIV expr                  { Ast.BinOp (Ast.Div, $1, $3) }
+    | expr EQUALSEQUALS expr         { Ast.BinOp (Ast.Eq, $1, $3) }
+    | expr LESSTHAN expr             { Ast.BinOp (Ast.Lt, $1, $3) }
+    | expr GREATERTHAN expr          { Ast.BinOp (Ast.Gt, $1, $3) }
+    | expr LESSTHANEQUALS expr       { Ast.BinOp (Ast.Lte, $1, $3) }
+    | expr GREATERTHANEQUALS expr    { Ast.BinOp (Ast.Gte, $1, $3) }
     | MINUS expr %prec UMINUS        { Ast.UnOp (Ast.Minus, $2) }
     | ID ROCKET expr                 { Ast.Lambda ($1, $3) }
     | base_expr LPAREN expr RPAREN   { Ast.Apply ($1, $3) }
