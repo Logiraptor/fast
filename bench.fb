@@ -51,4 +51,4 @@ val fact(r, x) =
 val inc(x) = x + 1
 val resolve(n) = n(inc, 0)
 
-val main(x) = resolve(Y(fact, ten))
+val main(x) = resolve(Y(fact, four))

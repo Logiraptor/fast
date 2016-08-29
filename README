@@ -1,0 +1,15 @@
+
+# Fast
+
+Fast (temporary name) is a language project that I'm using to improve my skills in OCaml.
+
+As of now I have only a few long term goals:
+
+- Type Safety
+- Mostly Purely functional
+- Speed of execution
+
+If this goes as planned, I will eventually product a compiled binary which is reasonably fast.
+
+As of now, I have a simple ast-traversal interpreter. It's painfully slow compared to equivalent programs in other languages.
+
