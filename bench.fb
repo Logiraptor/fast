@@ -51,4 +51,11 @@ val fact(r, x) =
 val inc(x) = x + 1
 val resolve(n) = n(inc, 0)
 
-val main(x) = resolve(Y(fact, four))
+# val main(x) = resolve(Y(fact, four))
+
+val nativeFact(x, accum) =
+    if x <= 0 then accum else nativeFact(x-1, accum * x) 
+
+val fastFact(x) = nativeFact(x, 1)
+
+val main(x) = fastFact(4)

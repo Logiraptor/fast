@@ -80,5 +80,17 @@ let all = "Interp" >:::
            ("val main(x) = if 1 == 2 then 0 else 1", Interp.Int 1);
         ]
     );
+    "recursive function" >:: ( fun () ->
+        List.iter ( fun (src, value) -> 
+            let prog = load src in
+            let actual = Interp.interp prog in
+            assert_equal_value value actual
+        ) [
+           ("val rec(x) = if x == 0 then 2 else rec(x-1)
+             val main(x) = rec(1)", Interp.Int 2);
+           ("val rec(x) = if x == 0 then 2 else rec(x-1)
+             val main(x) = rec(2)", Interp.Int 2);
+        ]
+    );
 ]
 

@@ -1,6 +1,7 @@
 
 let _ =
-    let inputFile = open_in "example.fb" in
+    let fileName = Array.get Sys.argv 1 in
+    let inputFile = open_in fileName in
     let lexbuf = Lexing.from_channel inputFile in
     try
         begin

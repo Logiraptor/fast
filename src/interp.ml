@@ -65,7 +65,14 @@ let rec eval ctx exp =
     )
     
     | Ast.Lambda (arg, body) -> Lambda (arg, body, ctx)
- 
+    
+    | Ast.If (cond, conseq, alt) -> 
+    let condVal = eval ctx cond in
+    match condVal with
+        True -> eval ctx conseq
+      | _ -> eval ctx alt
+
+
 and call (func : value) (arg : value) =
     match func with
         Lambda (param, body, ctx) ->

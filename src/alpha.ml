@@ -48,6 +48,11 @@ let rec convert prog =
             let (newEnv, newArg) = alloc_name env arg arg in
             let (newEnv2, newBody) = convert_expr newEnv body in
             (newEnv2, Ast.Lambda (newArg, newBody))
+          | Ast.If (cond, conseq, alt) ->
+            let (newEnv1, newCond) = convert_expr env cond in
+            let (newEnv2, newConseq) = convert_expr newEnv1 conseq in
+            let (newEnv3, newAlt) = convert_expr newEnv1 alt in
+            (newEnv3, Ast.If (newCond, newConseq, newAlt))
 
     and alloc_name (env : idDict) (orig : Ast.id) (name : Ast.id) : (idDict * Ast.id) =
         let (current : Ast.id option) = lookup env name in
