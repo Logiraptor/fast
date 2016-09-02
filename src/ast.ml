@@ -60,4 +60,4 @@ let dump_decl (name, expr) =
 
 
 let dump_program prog =
-    Printf.sprintf "(`prog \n%s)" (String.concat "\t\n" (List.map dump_decl prog))
+    Printf.sprintf "(`prog %s)" (String.concat ";" (List.map dump_decl prog))

@@ -20,13 +20,6 @@ val g = h => g
         " in 
         assert_equal_convert noop_prog noop_prog
     );
-    "redefine" >:: ( fun () ->
-        assert_equal_convert
-        "val a = 1
-         val a = 2"
-        "val a = 1
-         val a' = 2"
-    );
     "lambda" >:: ( fun () ->
         assert_equal_convert
         "val x = x => x"
@@ -38,6 +31,12 @@ val g = h => g
         "val bar = foo => bar' => foo(bar')"
     );
 
+    "redefine" >:: ( fun () ->
+        assert_raises (Alpha.RedefinedID "a")
+            (fun () -> Alpha.convert (parse 
+        "val a = 1
+         val a = 2"))
+    );
     "undefined id" >:: ( fun () -> 
         assert_raises (Alpha.UndefinedID "foo") 
             (fun () -> Alpha.convert (parse "val x = foo"))

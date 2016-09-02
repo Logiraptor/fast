@@ -2,7 +2,9 @@
 
 pwd = $(shell pwd)
 
-buildCmd = opam config exec "ocamlbuild -pkg core -use-ocamlfind -use-menhir -tag thread $@"
+buildCmd = opam config exec "ocamlbuild \
+			-pkgs core,llvm,llvm.bitreader \
+			-use-ocamlfind -use-menhir -tag thread $@"
 
 
 main.native: src/*

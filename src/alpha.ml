@@ -1,18 +1,16 @@
 
-open Dict
+
+module IdMap = Map.Make(struct type t = Ast.id let compare = compare end)
 
 
-type idDict = (Ast.id, Ast.id) dict
-
-let print_idDict (d : idDict) =
-    print_string (dump (fun x -> x) (fun x -> x) d);
-    print_newline()
-
+type renaming = Ast.id IdMap.t
 
 exception UndefinedID of string
+exception RedefinedID of string
 
 let rec convert prog =
-        convert_inner Empty prog
+        let names = alloc_names IdMap.empty prog in
+        convert_inner names prog
 
     and convert_inner env prog =
         match prog with
@@ -21,18 +19,14 @@ let rec convert prog =
                 newDecl::(convert_inner newEnv t)
           | [] -> []
     and convert_decl env (name, value) =
-        let (newEnv, newName) = alloc_name env name name in
-        let (newEnv2, newValue) = convert_expr newEnv value in
-        (newEnv2, (newName, newValue))
+        let (newEnv, newValue) = convert_expr env value in
+        (newEnv, (lookup_name env name, newValue))
 
     and convert_expr env expr =
         match expr with
             Ast.Int i -> (env, Ast.Int i)
           | Ast.ID id -> 
-            (let newName = lookup env id in
-            match newName with
-                None -> raise (UndefinedID id)
-              | Some name -> (env, Ast.ID name))
+            (env, Ast.ID (lookup_name env id))
           | Ast.BinOp (op, a, b) -> 
             let (newEnv, lhs) = convert_expr env a in
             let (newEnv2, rhs) = convert_expr newEnv b in
@@ -54,8 +48,25 @@ let rec convert prog =
             let (newEnv3, newAlt) = convert_expr newEnv1 alt in
             (newEnv3, Ast.If (newCond, newConseq, newAlt))
 
-    and alloc_name (env : idDict) (orig : Ast.id) (name : Ast.id) : (idDict * Ast.id) =
-        let (current : Ast.id option) = lookup env name in
-        match current with
-            None -> (append env orig name, name)
-          | Some other -> alloc_name env orig (other ^ "'")
+    and alloc_names (env : renaming) decl : renaming =
+        match decl with
+        | [] -> env
+        | (id, _)::t ->
+        if IdMap.mem id env then
+            raise (RedefinedID id)
+        else
+            let (newEnv, _) = (alloc_name env id id) in
+            alloc_names newEnv t 
+
+    and alloc_name (env : renaming) (orig : Ast.id) (name : Ast.id) : (renaming * Ast.id) =
+        if IdMap.mem name env then
+            alloc_name env orig (IdMap.find name env ^ "'")
+        else
+            (IdMap.add orig name env, name)
+
+
+    and lookup_name (env : renaming) (id : Ast.id) : Ast.id =
+        if IdMap.mem id env then
+            IdMap.find id env
+        else
+            raise (UndefinedID id)

@@ -1,10 +1,10 @@
-open Dict
+module IdMap = Map.Make(struct type t = Ast.id let compare = compare end)
 
 
 exception NotCallable of string
 exception TypeError of string
 
-type valuedict = (Ast.id, value) dict
+type valuedict = value IdMap.t
 
 and ctx = 
     { values : valuedict;
@@ -16,17 +16,18 @@ and value =
   | False
 
 
-let empty_ctx = {values = Empty}
+let empty_ctx = {values = IdMap.empty}
 
 
 
 let rec string_of_value v =
     match v with
-        Int i -> Printf.sprintf "(int %d)" i
-      | Lambda (id, exp, ctx) -> Printf.sprintf "(lambda (%s) -> %s)" 
+        Int i -> Printf.sprintf "%d" i
+      | Lambda (id, exp, ctx) -> Printf.sprintf "(lambda %s (%s) -> {%s})"
+            (*(dump (fun x->x) string_of_value ctx.values)*) "TODO: add ctx"
             id (Ast.dump_expr exp)
-      | True -> "(true)"
-      | False -> "(false)"
+      | True -> "true"
+      | False -> "false"
 
 let assert_int x =
     match x with
@@ -38,10 +39,7 @@ let rec eval ctx exp =
       Ast.Int i -> Int i
 
     | Ast.ID id -> 
-    (let v = lookup ctx.values id in
-    match v with
-        None -> raise (Alpha.UndefinedID id)
-      | Some value -> value)
+    IdMap.find id ctx.values
     
     | Ast.Apply (func, arg) ->
     (let f = eval ctx func in
@@ -76,21 +74,21 @@ let rec eval ctx exp =
 and call (func : value) (arg : value) =
     match func with
         Lambda (param, body, ctx) ->
-            let newEnv = append ctx.values param arg in
+            let newEnv = IdMap.add param arg ctx.values in
             eval {values=newEnv} body
       | _ -> raise (NotCallable (string_of_value func))
 
 
-let prepare_prog (env : ctx) ((name, value) : Ast.decl) : ctx =
+let prepare_decl (env : ctx) ((name, value) : Ast.decl) : ctx =
     let body = eval env value in
-    let (values : valuedict) = append env.values name body in
+    let (values : valuedict) = IdMap.add name body env.values in
     { values = values
     }
 
 let prepare (prog : Ast.program) : ctx =
-    List.fold_left prepare_prog empty_ctx prog
+    List.fold_left prepare_decl empty_ctx prog
 
 let interp (prog : Ast.program) : value =
     let ctx = prepare prog in
-    let Some main = lookup ctx.values "main" in
+    let main = IdMap.find "main" ctx.values in
     call main (Int 0) 
