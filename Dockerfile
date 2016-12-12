@@ -1,4 +1,4 @@
-FROM ubuntu
+FROM ubuntu:trusty
 
 # add add-apt-repository
 RUN apt-get update && \
