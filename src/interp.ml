@@ -5,7 +5,7 @@ exception NotCallable of string
 exception TypeError of string
 exception UndefinedID of Lexing.position * string
 
-type valuedict = value IdMap.t
+type valuedict = (value ref) IdMap.t
 
 and ctx = 
     { values : valuedict;
@@ -51,7 +51,7 @@ let rec eval ctx exp =
 
     | Ast.ID id ->
     (try
-        IdMap.find id ctx.values
+        !(IdMap.find id ctx.values)
     with
     | Not_found -> raise (UndefinedID (ctx.position, id)))
     
@@ -87,22 +87,29 @@ let rec eval ctx exp =
 and call (func : value) (arg : value) =
     match func with
         Lambda (param, body, ctx) ->
-            let newEnv = IdMap.add param arg ctx.values in
+            let newEnv = IdMap.add param (ref arg) ctx.values in
             eval {values=newEnv; position=ctx.position} body
       | _ -> raise (NotCallable (string_of_value func))
 
+let update_binding (values : valuedict) (name : string) (value : value) : unit =
+    let f k v =
+        if k == name then
+            v := value
+        else 
+            ()
+    in
+    IdMap.iter f values 
 
 let prepare_decl (env : ctx) ((name, value) : Ast.decl) : ctx =
-    let body = eval env value in
-    let (values : valuedict) = IdMap.add name body env.values in
-    { values = values;
-      position = env.position
-    }
+    let (values : valuedict) = IdMap.add name (ref (Int 0)) env.values in
+    let newEnv = { values = values; position = env.position } in
+    let _ = update_binding values name (eval newEnv value) in
+    newEnv
 
 let prepare (prog : Ast.program) : ctx =
     List.fold_left prepare_decl empty_ctx prog
 
 let interp (prog : Ast.program) : value =
     let ctx = prepare prog in
-    let main = IdMap.find "main" ctx.values in
+    let main = !(IdMap.find "main" ctx.values) in
     call main (Int 0) 
