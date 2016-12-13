@@ -47,6 +47,9 @@ let rec convert prog =
             let (newEnv2, newConseq) = convert_expr newEnv1 conseq in
             let (newEnv3, newAlt) = convert_expr newEnv1 alt in
             (newEnv3, Ast.If (newCond, newConseq, newAlt))
+          | Ast.Pos (expr, position) ->
+            let (newEnv, newExpr) = convert_expr env expr in
+            (newEnv, Ast.Pos (newExpr, position))
 
     and alloc_names (env : renaming) decl : renaming =
         match decl with

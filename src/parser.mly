@@ -10,6 +10,8 @@ let rec makeApply (func : Ast.expr) (args : Ast.expr list) : Ast.expr =
         [] -> func
         | h::t -> makeApply (Ast.Apply (func, h)) t
 
+let pos (expr : Ast.expr) (pos : Lexing.position) : Ast.expr =
+    Ast.Pos (expr, pos)
 
 %}
 
@@ -41,8 +43,8 @@ main:
 ;
 
 decl:
-    VAL ID EQUALS expr { ($2, $4) }
-    | VAL ID arglist EQUALS expr { ($2, makeLambda $3 $5) }
+    VAL ID EQUALS posexpr { ($2, $4) }
+    | VAL ID arglist EQUALS posexpr { ($2, makeLambda $3 $5) }
 ;
 
 arglist:
@@ -52,6 +54,9 @@ arglist:
 explist:
     LPAREN args = separated_list(COMMA, expr) RPAREN  { args }
 ;
+
+posexpr:
+    expr { pos $1 $startpos }
 
 expr:
     INT                              { Ast.Int $1 }

@@ -3,11 +3,13 @@ module IdMap = Map.Make(struct type t = Ast.id let compare = compare end)
 
 exception NotCallable of string
 exception TypeError of string
+exception UndefinedID of Lexing.position * string
 
 type valuedict = value IdMap.t
 
 and ctx = 
     { values : valuedict;
+      position : Lexing.position;
     }
 and value =
     Int of int
@@ -16,7 +18,13 @@ and value =
   | False
 
 
-let empty_ctx = {values = IdMap.empty}
+let empty_ctx = {values = IdMap.empty; 
+                 position = {
+                    pos_lnum = 0; 
+                    pos_fname = "todo.fb"; 
+                    pos_bol = 0; 
+                    pos_cnum = 0; 
+                }}
 
 
 
@@ -36,10 +44,16 @@ let assert_int x =
 
 let rec eval ctx exp =
     match exp with
-      Ast.Int i -> Int i
+    Ast.Pos (expr, position) ->
+      eval {ctx with position = position} expr
 
-    | Ast.ID id -> 
-    IdMap.find id ctx.values
+    | Ast.Int i -> Int i
+
+    | Ast.ID id ->
+    (try
+        IdMap.find id ctx.values
+    with
+    | Not_found -> raise (UndefinedID (ctx.position, id)))
     
     | Ast.Apply (func, arg) ->
     (let f = eval ctx func in
@@ -70,19 +84,19 @@ let rec eval ctx exp =
         True -> eval ctx conseq
       | _ -> eval ctx alt
 
-
 and call (func : value) (arg : value) =
     match func with
         Lambda (param, body, ctx) ->
             let newEnv = IdMap.add param arg ctx.values in
-            eval {values=newEnv} body
+            eval {values=newEnv; position=ctx.position} body
       | _ -> raise (NotCallable (string_of_value func))
 
 
 let prepare_decl (env : ctx) ((name, value) : Ast.decl) : ctx =
     let body = eval env value in
     let (values : valuedict) = IdMap.add name body env.values in
-    { values = values
+    { values = values;
+      position = env.position
     }
 
 let prepare (prog : Ast.program) : ctx =

@@ -21,4 +21,6 @@ let _ =
       end
     | e ->
         close_in_noerr inputFile;
-        raise e
+        match e with
+        | Interp.UndefinedID (pos, id) -> Printf.printf "line %d: undefined id (%s)\n" pos.pos_lnum id; ()
+        | _ -> raise e

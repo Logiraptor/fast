@@ -16,11 +16,19 @@ let getError lexbuf =
 let string_of_error (line, column, token) =
     Printf.sprintf "%d:%d %s" line column token
 
+let next_line lexbuf =
+  let pos = lexbuf.Lexing.lex_curr_p in
+  lexbuf.Lexing.lex_curr_p <-
+    { pos with pos_bol = lexbuf.lex_curr_pos;
+               pos_lnum = pos.pos_lnum + 1
+    }
+
 }
 
 rule token = parse
-    [' ' '\t' '\n']     { token lexbuf }     (* skip blanks *)
-    
+    [' ' '\t']+     { token lexbuf }     (* skip blanks *)
+
+    | ['\n' '\r']    { next_line lexbuf; token lexbuf }
     | '#' [^ '\n']*  { token lexbuf } (* skip comments *)
     
     | "val"          { VAL }

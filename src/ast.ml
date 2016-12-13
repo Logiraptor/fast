@@ -21,6 +21,7 @@ type expr = Int of int
           | Lambda of (id * expr)
           | Apply of (expr * expr)
           | If of (expr * expr * expr)
+          | Pos of (expr * Lexing.position)
 
 type decl = (id * expr)
 
