@@ -55,6 +55,7 @@ let rec dump_expr expr =
       | Lambda (arg, body) -> Printf.sprintf "(`lambda %s %s)" arg (dump_expr body)
       | Apply (func, arg) -> Printf.sprintf "(`call %s %s)" (dump_expr func) (dump_expr arg)
       | If (cond, conseq, alt) -> Printf.sprintf "(`if %s %s %s)" (dump_expr cond) (dump_expr conseq) (dump_expr alt)
+      | Pos (expr, pos) -> dump_expr expr
 
 let dump_decl (name, expr) =
     Printf.sprintf "(`decl %s %s)" name (dump_expr expr)
