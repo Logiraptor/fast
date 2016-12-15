@@ -8,9 +8,8 @@ let _ =
             let result = Parser.main Lexer.token lexbuf in
             let aconvertResult = Alpha.convert result in
             let output = Codegen.interp aconvertResult in
-            let outputString = string_of_int output in
-            print_string outputString; print_newline();
-            close_in inputFile
+            close_in inputFile;
+            exit output
         end
     with
     | Parser.Error ->

@@ -108,29 +108,6 @@ let gen_module (prog : Ast.program) : Llvm.llmodule =
     llmod
 
 
-(*let generate (prog : Ast.program) : unit =
-    let ftype = Llvm.function_type int_type (Array.make 0 int_type) in
-    let the_function = Llvm.declare_function "foo" ftype llmod in
-
-    let bb = Llvm.append_block llctx "entry" the_function in
-
-    let _ = Llvm.position_at_end bb builder in
-
-    let ret_val = Llvm.build_add (Llvm.const_int int_type 4) (Llvm.const_int int_type 4) "tmp" builder in
-
-    let _ = Llvm.build_ret ret_val builder in
-
-    let the_execution_engine = ExecutionEngine.create llmod in
-
-    let result = ExecutionEngine.run_function the_function [||] the_execution_engine in
-
-    Llvm_analysis.assert_valid_function the_function;
-    Llvm.dump_module llmod;
-    print_int (GenericValue.as_int result);
-    print_newline ();
-    ()*)
-
-
 let interp (prog : Ast.program) : int =
     let llmod = gen_module prog in
     let main_opt = Llvm.lookup_function "main" llmod in
