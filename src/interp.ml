@@ -1,6 +1,8 @@
 module IdMap = Map.Make(struct type t = Ast.id let compare = compare end)
 
 
+open Llvm_executionengine
+
 exception NotCallable of string
 exception TypeError of string
 exception UndefinedID of Lexing.position * string
@@ -113,3 +115,4 @@ let interp (prog : Ast.program) : value =
     let ctx = prepare prog in
     let main = !(IdMap.find "main" ctx.values) in
     call main (Int 0) 
+

@@ -9,6 +9,7 @@ let _ =
             let aconvertResult = Alpha.convert result in
             let output = Interp.interp aconvertResult in
             let outputString = Interp.string_of_value output in
+            let _ = Codegen.generate aconvertResult in
             print_string outputString; print_newline();
             close_in inputFile
         end

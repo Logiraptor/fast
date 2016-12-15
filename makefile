@@ -3,7 +3,7 @@
 pwd = $(shell pwd)
 
 buildCmd = opam config exec "ocamlbuild \
-			-pkgs core,llvm,llvm.bitreader \
+			-pkgs core,llvm,llvm.bitreader,llvm.executionengine,llvm.analysis \
 			-use-ocamlfind -use-menhir -tag thread $@"
 
 
@@ -13,7 +13,7 @@ main.native: src/*
 
 
 test: test.native
-	./_build/test.native
+	docker run -v $(pwd)/_build:/code/_build ocaml-core _build/test.native
 
 
 test.native: src/*
