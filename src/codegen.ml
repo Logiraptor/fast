@@ -14,7 +14,7 @@ type ctx =
     }
 
 let llctx = Llvm.global_context ()
-let int_type = Llvm.i32_type llctx
+let int_type = Llvm.i64_type llctx
 
 
 let bool_to_int (builder : Llvm.llbuilder) (x : Llvm.llvalue) : Llvm.llvalue =
@@ -45,6 +45,8 @@ let rec gen_expr (ctx : ctx) (name : string) (expr : Ast.expr) : (Llvm.lltype * 
         let ftype = Llvm.function_type int_type [| int_type |] in
         let fn = Llvm.declare_function name ftype ctx.llmod in
 
+        let _ = Hashtbl.add ctx.values name (ftype, fn) in
+
         let param = Llvm.param fn 0 in
         let _ = Llvm.set_value_name arg param in
         let _ = Hashtbl.add ctx.values arg (int_type, param) in
@@ -58,7 +60,6 @@ let rec gen_expr (ctx : ctx) (name : string) (expr : Ast.expr) : (Llvm.lltype * 
     | Ast.Apply (fn, arg) ->
         let (_, fn_val) = gen_expr ctx "fn" fn in
         let (_, arg_val) = gen_expr ctx "arg" arg in
-        let _ = Llvm.dump_module ctx.llmod in
         (int_type, Llvm.build_call fn_val [|arg_val|] "" ctx.builder)
     | Ast.If (cond, conseq, alt) ->
         let (_, cond_val) = gen_expr ctx "" cond in
@@ -104,7 +105,6 @@ let gen_module (prog : Ast.program) : Llvm.llmodule =
     let builder = Llvm.builder llctx in
     let ctx = { values = Hashtbl.create 10 ; builder = builder ; llmod = llmod ; llctx = llctx } in
     List.iter (gen_decl ctx) prog;
-    Llvm.dump_module llmod;
     llmod
 
 
@@ -131,10 +131,13 @@ let gen_module (prog : Ast.program) : Llvm.llmodule =
     ()*)
 
 
-let interp (prog : Ast.program) : GenericValue.t =
+let interp (prog : Ast.program) : int =
     let llmod = gen_module prog in
     let main_opt = Llvm.lookup_function "main" llmod in
     let execution_engine = ExecutionEngine.create llmod in
     match main_opt with
-        Some f -> ExecutionEngine.run_function f [| GenericValue.of_int int_type 0 |] execution_engine
-    | None -> raise (UndefinedID "add a main function")
+    None -> raise (UndefinedID "add a main function")
+    | Some f ->
+        let output = ExecutionEngine.run_function f [| GenericValue.of_int int_type 0 |] execution_engine in
+        GenericValue.as_int output
+

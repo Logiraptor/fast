@@ -7,9 +7,8 @@ let _ =
         begin
             let result = Parser.main Lexer.token lexbuf in
             let aconvertResult = Alpha.convert result in
-            let output = Interp.interp aconvertResult in
-            let outputString = Interp.string_of_value output in
-            let _ = Codegen.generate aconvertResult in
+            let output = Codegen.interp aconvertResult in
+            let outputString = string_of_int output in
             print_string outputString; print_newline();
             close_in inputFile
         end
